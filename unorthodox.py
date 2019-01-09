@@ -31,7 +31,7 @@ LOSS = -1
 class Piece:
     """Base class of all piece types.
 
-    Subclasses shoult provide the following:
+    Subclasses should provide the following:
     value -- The piece's value in centipawns (a static field).
     generate_moves -- A method which generates all moves the piece can make.
     attacks -- Returns True if the piece attacks a particular square.
@@ -137,7 +137,7 @@ class LeaperRider(Piece):
 
 
 class Rider(Piece):
-    """Riders are piece which make multiple steps in one direction, e.g. the
+    """Riders are pieces which make multiple steps in one direction, e.g. the
     rook. This is their base class.
     """
 
@@ -282,7 +282,6 @@ class Rook(Rider):
 
 class DoubleStepPawn(SingleStepPawn):
     """A pawn with an initial double step."""
-    value = 100
 
     def __init__(self, player, symbol, promotions, initial_rank):
         SingleStepPawn.__init__(self, player, symbol, promotions)
@@ -325,7 +324,6 @@ class DoubleStepPawn(SingleStepPawn):
 
 class TripleStepPawn(DoubleStepPawn):
     """A pawn with an initial triple step."""
-    value = 100
 
     def generate_moves(self, position, origin):
         moves = DoubleStepPawn.generate_moves(self, position, origin)

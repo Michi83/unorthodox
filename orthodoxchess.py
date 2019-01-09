@@ -4,6 +4,8 @@ from unorthodox import (BLACK, DoubleStepPawn, OrthodoxPosition, WHITE,
                         white_knight, white_queen, white_rook)
 
 
+# Standard-rules chess
+
 white_pawn = DoubleStepPawn(WHITE, "P", (white_queen, white_bishop,
                                          white_knight, white_rook), 6)
 black_pawn = DoubleStepPawn(BLACK, "p", (black_queen, black_bishop,

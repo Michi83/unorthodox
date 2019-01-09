@@ -1,4 +1,7 @@
-from unorthodox import (BLACK, CapablancaPosition, DoubleStepPawn, LeaperRider, WHITE, black_bishop, black_king, black_knight, black_queen, black_rook, play, white_bishop, white_king, white_knight, white_queen, white_rook)
+from unorthodox import (BLACK, CapablancaPosition, DoubleStepPawn, LeaperRider,
+                        WHITE, black_bishop, black_king, black_knight,
+                        black_queen, black_rook, play, white_bishop,
+                        white_king, white_knight, white_queen, white_rook)
 
 
 class Chancellor(LeaperRider):

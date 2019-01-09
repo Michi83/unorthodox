@@ -1,7 +1,6 @@
 from unorthodox import (BLACK, DoubleStepPawn, LeaperRider, OrthodoxPosition,
                         WHITE, black_bishop, black_king, black_knight,
-                        black_queen, black_rook, play, white_knight,
-                        white_queen)
+                        black_queen, black_rook, play)
 
 
 class Maharajah(LeaperRider):

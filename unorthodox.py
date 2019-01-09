@@ -49,6 +49,66 @@ class Piece:
         self.symbol = symbol
 
 
+class CannonRider(Piece):
+    """Base class for piece that capture after jumping over a piece, e.g. the
+    cannon in Xiangji.
+    """
+
+    def attacks(self, position, square, origin):
+        for offset in self.offsets:
+            target = (
+                origin[0] + self.player * offset[0],
+                origin[1] + offset[1]
+            )
+            while position.empty(target):
+                target = (
+                    target[0] + self.player * offset[0],
+                    target[1] + offset[1]
+                )
+            target = (
+                target[0] + self.player * offset[0],
+                target[1] + offset[1]
+            )
+            while position.empty(target):
+                if target == square:
+                    return True
+                target = (
+                    target[0] + self.player * offset[0],
+                    target[1] + offset[1]
+                )
+            if target == square:
+                return True
+        return False
+
+    def generate_moves(self, position, origin):
+        moves = []
+        for offset in self.offsets:
+            target = (
+                origin[0] + self.player * offset[0],
+                origin[1] + offset[1]
+            )
+            while position.empty(target):
+                move = position.make_move(origin, target)
+                moves.append(move)
+                target = (
+                    target[0] + self.player * offset[0],
+                    target[1] + offset[1]
+                )
+            target = (
+                target[0] + self.player * offset[0],
+                target[1] + offset[1]
+            )
+            while position.empty(target):
+                target = (
+                    target[0] + self.player * offset[0],
+                    target[1] + offset[1]
+                )
+            if position.capturable(target):
+                move = position.make_move(origin, target)
+                moves.append(move)
+        return moves
+
+
 class Leaper(Piece):
     """Leapers are pieces which move a certain number of ranks and files
     leaping over intervening pieces (e.g. the orthodox knight). This is their
@@ -152,7 +212,8 @@ class Rider(Piece):
                     return True
                 target = (
                     target[0] + self.player * offset[0],
-                    target[1] + offset[1])
+                    target[1] + offset[1]
+                )
             if target == square:
                 return True
         return False

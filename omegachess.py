@@ -1,7 +1,8 @@
-from unorthodox import (BLACK, Leaper, Position, TripleStepPawn, WHITE,
-                        black_bishop, black_king, black_knight, black_queen,
-                        black_rook, empty, lava, play, white_bishop,
-                        white_king, white_knight, white_queen, white_rook)
+from unorthodox import (BLACK, Leaper, TripleStepEnPassantPosition,
+                        TripleStepPawn, WHITE, black_bishop, black_king,
+                        black_knight, black_queen, black_rook, empty, lava,
+                        play, white_bishop, white_king, white_knight,
+                        white_queen, white_rook)
 
 
 class Champion(Leaper):
@@ -23,23 +24,19 @@ class Wizard(Leaper):
 
 
 class OmegaPawn(TripleStepPawn):
-    def can_promote(self, square, position):
-        return (self.player == WHITE and square[0] == 1 or self.player == BLACK
-                and square[0] == 10)
-
-    def must_promote(self, square, position):
+    def can_promote(self, position, square):
         return (self.player == WHITE and square[0] == 1 or self.player == BLACK
                 and square[0] == 10)
 
 
-class OmegaPosition(Position):
+class OmegaPosition(TripleStepEnPassantPosition):
     def __init__(self, **kwargs):
         if "copy" in kwargs:
             copy = kwargs["copy"]
-            Position.__init__(self, **kwargs)
+            TripleStepEnPassantPosition.__init__(self, **kwargs)
             self.castling = list(copy.castling)  # copy castling rights
         else:
-            Position.__init__(self, size=(12, 12))
+            TripleStepEnPassantPosition.__init__(self, size=(12, 12))
             for i in range(1, 11):
                 self[0, i] = lava
                 self[i, 0] = lava
@@ -60,7 +57,7 @@ class OmegaPosition(Position):
                 and not self.attacked((1, 5), WHITE))
 
     def generate_moves(self):
-        moves = Position.generate_moves(self)
+        moves = TripleStepEnPassantPosition.generate_moves(self)
         # castling
         if self.player == WHITE:
             if self.white_kingside_castling():
@@ -87,7 +84,7 @@ class OmegaPosition(Position):
         return moves
 
     def make_move(self, origin, target, promotion=None):
-        move = Position.make_move(self, origin, target, promotion)
+        move = TripleStepEnPassantPosition.make_move(self, origin, target)
         # update castling rights
         if origin == (10, 6) or origin == (10, 9) or target == (10, 9):
             move.castling[0] = False

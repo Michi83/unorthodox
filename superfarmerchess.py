@@ -33,21 +33,21 @@ class SuperFarmerJumpingQueen(Leaper):
 class SuperFarmerQueen(King):
     value = 500
 
-    def attacks(self, square, origin, position):
-        if King.attacks(self, square, origin, position):
+    def attacks(self, position, square, origin):
+        if King.attacks(self, position, square, origin):
             return True
         if not position.queens_moved[position.player]:
-            if SuperFarmerJumpingQueen.attacks(self, square, origin, position):
+            if SuperFarmerJumpingQueen.attacks(self, position, square, origin):
                 return True
         return False
 
-    def generate_moves(self, origin, position):
+    def generate_moves(self, position, origin):
         # king-like moves
-        moves = King.generate_moves(self, origin, position)
+        moves = King.generate_moves(self, position, origin)
         # jumps
         if not position.queens_moved[position.player]:
-            moves += SuperFarmerJumpingQueen.generate_moves(self, origin,
-                                                            position)
+            moves += SuperFarmerJumpingQueen.generate_moves(self, position,
+                                                            origin)
         return moves
 
 

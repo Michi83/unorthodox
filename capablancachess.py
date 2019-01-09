@@ -1,21 +1,28 @@
-from unorthodox import (BLACK, CapablancaPosition, Compound, DoubleStepPawn,
-                        WHITE, black_bishop, black_king, black_knight,
-                        black_queen, black_rook, play, white_bishop,
-                        white_king, white_knight, white_queen, white_rook)
+from unorthodox import (BLACK, CapablancaPosition, DoubleStepPawn, LeaperRider, WHITE, black_bishop, black_king, black_knight, black_queen, black_rook, play, white_bishop, white_king, white_knight, white_queen, white_rook)
 
 
-class Chancellor(Compound):
+class Chancellor(LeaperRider):
     value = 850
+    rider_offsets = (-1, 0), (0, -1), (0, 1), (1, 0)
+    leaper_offsets = (
+        (-2, -1), (-2, 1), (-1, -2), (-1, 2),
+        (1, -2), (1, 2), (2, -1), (2, 1)
+    )
 
 
-class Archbishop(Compound):
+class Archbishop(LeaperRider):
     value = 800
+    rider_offsets = (-1, -1), (-1, 1), (1, -1), (1, 1)
+    leaper_offsets = (
+        (-2, -1), (-2, 1), (-1, -2), (-1, 2),
+        (1, -2), (1, 2), (2, -1), (2, 1)
+    )
 
 
-white_chancellor = Chancellor(WHITE, "C", (white_rook, white_knight))
-black_chancellor = Chancellor(BLACK, "c", (black_rook, black_knight))
-white_archbishop = Archbishop(WHITE, "A", (white_bishop, white_knight))
-black_archbishop = Archbishop(BLACK, "a", (black_bishop, black_knight))
+white_chancellor = Chancellor(WHITE, "C")
+black_chancellor = Chancellor(BLACK, "c")
+white_archbishop = Archbishop(WHITE, "A")
+black_archbishop = Archbishop(BLACK, "a")
 white_pawn = DoubleStepPawn(WHITE, "P", (white_queen, white_chancellor,
                                          white_archbishop, white_bishop,
                                          white_knight, white_rook), 6)
@@ -67,4 +74,4 @@ position.royal[WHITE] = 7, 5
 position.royal[BLACK] = 0, 5
 position.castling = [True, True, True, True]
 if __name__ == "__main__":
-    play(position, 1, 2, 2)
+    play(position, 10)

@@ -1,15 +1,32 @@
+from random import choice
 from threading import Thread
 
+
+# A framework for implementing chess variants with a basic computer opponent
+# good enough for test games.
+#
+# Tuples of two integers are used for board sizes, coordinates and offsets,
+# i.e. changes in coordinates. The first integer is the rank, the second
+# integer is the file. (0, 0) is white's upper left corner.
+#
+# For every piece type there should be one class and two instances thereof, one
+# for white and one for black.
+
+
+# Constants
 
 WHITE = 1
 NEUTRAL = 0
 BLACK = -1
 HUMAN = 1
 COMPUTER = 2
+RANDOM = 3
 WIN = 1
 DRAW = 0
 LOSS = -1
 
+
+# Piece types
 
 class Piece:
     """Base class of all piece types.
@@ -32,40 +49,192 @@ class Piece:
         self.symbol = symbol
 
 
-class Compound(Piece):
-    def __init__(self, player, symbol, pieces):
-        Piece.__init__(self, player, symbol)
-        self.pieces = pieces
-
-    def attacks(self, square, origin, position):
-        for piece in self.pieces:
-            if piece.attacks(square, origin, position):
-                return True
-        return False
-
-    def generate_moves(self, origin, position):
-        moves = []
-        for piece in self.pieces:
-            moves += piece.generate_moves(origin, position)
-        return moves
-
-
 class Leaper(Piece):
-    """Base class of all leapers."""
+    """Leapers are pieces which move a certain number of ranks and files
+    leaping over intervening pieces (e.g. the orthodox knight). This is their
+    base class.
+    """
 
-    def attacks(self, square, origin, position):
+    def attacks(self, position, square, origin):
         for offset in self.offsets:
-            target = origin[0] + self.player * offset[0], origin[1] + offset[1]
+            target = (
+                origin[0] + self.player * offset[0],
+                origin[1] + offset[1]
+            )
             if target == square:
                 return True
         return False
 
-    def generate_moves(self, origin, position):
+    def generate_moves(self, position, origin):
         moves = []
         for offset in self.offsets:
-            target = origin[0] + self.player * offset[0], origin[1] + offset[1]
+            target = (
+                origin[0] + self.player * offset[0],
+                origin[1] + offset[1]
+            )
             if position.capturable_or_empty(target):
+                move = position.make_move(origin, target)
+                moves.append(move)
+        return moves
+
+
+class LeaperRider(Piece):
+    """Base class of compounds of leapers and riders."""
+
+    def attacks(self, position, square, origin):
+        # rider attacks
+        for offset in self.rider_offsets:
+            target = (
+                origin[0] + self.player * offset[0],
+                origin[1] + offset[1]
+            )
+            while position.empty(target):
+                if target == square:
+                    return True
+                target = (
+                    target[0] + self.player * offset[0],
+                    target[1] + offset[1])
+            if target == square:
+                return True
+        # leaper attacks
+        for offset in self.leaper_offsets:
+            target = (
+                origin[0] + self.player * offset[0],
+                origin[1] + offset[1]
+            )
+            if target == square:
+                return True
+        return False
+
+    def generate_moves(self, position, origin):
+        moves = []
+        # rider moves
+        for offset in self.rider_offsets:
+            target = (
+                origin[0] + self.player * offset[0],
+                origin[1] + offset[1]
+            )
+            while position.empty(target):
+                move = position.make_move(origin, target)
+                moves.append(move)
+                target = (
+                    target[0] + self.player * offset[0],
+                    target[1] + offset[1]
+                )
+            if position.capturable(target):
+                move = position.make_move(origin, target)
+                moves.append(move)
+        # leaper moves
+        for offset in self.leaper_offsets:
+            target = (
+                origin[0] + self.player * offset[0],
+                origin[1] + offset[1]
+            )
+            if position.capturable_or_empty(target):
+                move = position.make_move(origin, target)
+                moves.append(move)
+        return moves
+
+
+class Rider(Piece):
+    """Riders are piece which make multiple steps in one direction, e.g. the
+    rook. This is their base class.
+    """
+
+    def attacks(self, position, square, origin):
+        for offset in self.offsets:
+            target = (
+                origin[0] + self.player * offset[0],
+                origin[1] + offset[1]
+            )
+            while position.empty(target):
+                if target == square:
+                    return True
+                target = (
+                    target[0] + self.player * offset[0],
+                    target[1] + offset[1])
+            if target == square:
+                return True
+        return False
+
+    def generate_moves(self, position, origin):
+        moves = []
+        for offset in self.offsets:
+            target = (
+                origin[0] + self.player * offset[0],
+                origin[1] + offset[1]
+            )
+            while position.empty(target):
+                move = position.make_move(origin, target)
+                moves.append(move)
+                target = (
+                    target[0] + self.player * offset[0],
+                    target[1] + offset[1]
+                )
+            if position.capturable(target):
+                move = position.make_move(origin, target)
+                moves.append(move)
+        return moves
+
+
+class SingleStepPawn(Piece):
+    """A pawn without an initial double step."""
+    offsets = (-1, -1), (-1, 1)
+    value = 100
+
+    def __init__(self, player, symbol, promotions):
+        Piece.__init__(self, player, symbol)
+        self.promotions = promotions
+
+    def attacks(self, position, square, origin):
+        for offset in self.offsets:
+            target = (
+                origin[0] + self.player * offset[0],
+                origin[1] + offset[1]
+            )
+            if target == square:
+                return True
+        return False
+
+    def can_promote(self, position, square):
+        return (self.player == WHITE and square[0] == 0 or self.player == BLACK
+                and square[0] == position.size[0] - 1)
+
+    def generate_moves(self, position, origin):
+        moves = []
+        # captures
+        for offset in self.offsets:
+            target = (
+                origin[0] + self.player * offset[0],
+                origin[1] + offset[1]
+            )
+            if position.capturable(target):
+                # promotions
+                if self.can_promote(position, target):
+                    moves += self.generate_promotions(position, origin, target)
+                else:
+                    move = position.make_move(origin, target)
+                    moves.append(move)
+        # non captures
+        target = (
+            origin[0] - self.player,
+            origin[1]
+        )
+        if position.empty(target):
+            # promotions
+            if self.can_promote(position, target):
+                moves += self.generate_promotions(position, origin, target)
+            else:
                 moves.append(position.make_move(origin, target))
+        return moves
+
+    def generate_promotions(self, position, origin, target):
+        moves = []
+        for promotion in self.promotions:
+            move = position.make_move(origin, target)
+            move[target] = promotion
+            move.notation += promotion.symbol
+            moves.append(move)
         return moves
 
 
@@ -87,34 +256,6 @@ class Knight(Leaper):
         (-2, -1), (-2, 1), (-1, -2), (-1, 2),
         (1, -2), (1, 2), (2, -1), (2, 1),
     )
-
-
-class Rider(Piece):
-    """Base class of all riders."""
-
-    def attacks(self, square, origin, position):
-        for offset in self.offsets:
-            target = origin[0] + self.player * offset[0], origin[1] + offset[1]
-            while position.empty(target):
-                if target == square:
-                    return True
-                target = (target[0] + self.player * offset[0], target[1]
-                          + offset[1])
-            if target == square:
-                return True
-        return False
-
-    def generate_moves(self, origin, position):
-        moves = []
-        for offset in self.offsets:
-            target = origin[0] + self.player * offset[0], origin[1] + offset[1]
-            while position.empty(target):
-                moves.append(position.make_move(origin, target))
-                target = (target[0] + self.player * offset[0], target[1]
-                          + offset[1])
-            if position.capturable(target):
-                moves.append(position.make_move(origin, target))
-        return moves
 
 
 class Bishop(Rider):
@@ -139,73 +280,6 @@ class Rook(Rider):
     offsets = (-1, 0), (0, -1), (0, 1), (1, 0)
 
 
-class SingleStepPawn(Piece):
-    """A pawn without an initial double step."""
-    value = 100
-
-    def __init__(self, player, symbol, promotions):
-        Piece.__init__(self, player, symbol)
-        self.promotions = promotions
-
-    def attacks(self, square, origin, position):
-        for offset in ((-1, -1), (-1, 1)):
-            target = origin[0] + self.player * offset[0], origin[1] + offset[1]
-            if target == square:
-                return True
-        return False
-
-    def can_promote(self, square, position):
-        return (self.player == WHITE and square[0] == 0 or self.player == BLACK
-                and square[0] == position.size[0] - 1)
-
-    def generate_moves(self, origin, position):
-        moves = []
-        # captures
-        for offset in ((-1, -1), (-1, 1)):
-            target = origin[0] + self.player * offset[0], origin[1] + offset[1]
-            if position.capturable(target):
-                # promotions
-                if self.can_promote(target, position):
-                    moves += self.generate_promotions(origin, target, position)
-                if not self.must_promote(target, position):
-                    moves.append(position.make_move(origin, target))
-            # en passant
-            elif target == position.en_passant:
-                # square of the captured pawn
-                square = target[0] + self.player, target[1]
-                move = position.make_move(origin, target)
-                move[square] = empty
-                move.presort = 0
-                moves.append(move)
-            # triple step en passant
-            elif target == position.en_passant2:
-                # square of the captured pawn
-                square = target[0] + self.player * 2, target[1]
-                move = position.make_move(origin, target)
-                move[square] = empty
-                move.presort = 0
-                moves.append(move)
-        # non captures
-        target = origin[0] - self.player, origin[1]
-        if position.empty(target):
-            # promotions
-            if self.can_promote(target, position):
-                moves += self.generate_promotions(origin, target, position)
-            if not self.must_promote(target, position):
-                moves.append(position.make_move(origin, target))
-        return moves
-
-    def generate_promotions(self, origin, target, position):
-        moves = []
-        for promotion in self.promotions:
-            moves.append(position.make_move(origin, target, promotion))
-        return moves
-
-    def must_promote(self, square, position):
-        return (self.player == WHITE and square[0] == 0 or self.player == BLACK
-                and square[0] == position.size[0] - 1)
-
-
 class DoubleStepPawn(SingleStepPawn):
     """A pawn with an initial double step."""
     value = 100
@@ -214,14 +288,34 @@ class DoubleStepPawn(SingleStepPawn):
         SingleStepPawn.__init__(self, player, symbol, promotions)
         self.initial_rank = initial_rank
 
-    def generate_moves(self, origin, position):
-        moves = SingleStepPawn.generate_moves(self, origin, position)
+    def generate_moves(self, position, origin):
+        moves = SingleStepPawn.generate_moves(self, position, origin)
+        # en passant
+        for offset in self.offsets:
+            target = (
+                origin[0] + self.player * offset[0],
+                origin[1] + offset[1]
+            )
+            if target == position.en_passant:
+                move = position.make_move(origin, target)
+                # coordinates of the captured pawn
+                square = (
+                    target[0] + self.player,
+                    target[1]
+                )
+                move[square] = empty
         # double step
         if origin[0] == self.initial_rank:
             # the intermediate square
-            square = origin[0] - self.player, origin[1]
+            square = (
+                origin[0] - self.player,
+                origin[1]
+            )
             if position.empty(square):
-                target = square[0] - self.player, square[1]
+                target = (
+                    square[0] - self.player,
+                    square[1]
+                )
                 if position.empty(target):
                     move = position.make_move(origin, target)
                     move.en_passant = square
@@ -233,17 +327,40 @@ class TripleStepPawn(DoubleStepPawn):
     """A pawn with an initial triple step."""
     value = 100
 
-    def generate_moves(self, origin, position):
-        moves = DoubleStepPawn.generate_moves(self, origin, position)
+    def generate_moves(self, position, origin):
+        moves = DoubleStepPawn.generate_moves(self, position, origin)
+        # en passant
+        for offset in self.offsets:
+            target = (
+                origin[0] + self.player * offset[0],
+                origin[1] + offset[1]
+            )
+            if target == position.en_passant2:
+                move = position.make_move(origin, target)
+                # coordinates of the captured pawn
+                square = (
+                    target[0] + 2 * self.player,
+                    target[1]
+                )
+                move[square] = empty
         # triple step
         if origin[0] == self.initial_rank:
-            # the first intermediate square
-            square1 = origin[0] - self.player, origin[1]
+            # first intermediate square
+            square1 = (
+                origin[0] - self.player,
+                origin[1]
+            )
             if position.empty(square1):
-                # the second intermediate square
-                square2 = square1[0] - self.player, square1[1]
+                # second intermediate square
+                square2 = (
+                    square1[0] - self.player,
+                    square1[1]
+                )
                 if position.empty(square2):
-                    target = square2[0] - self.player, square2[1]
+                    target = (
+                        square2[0] - self.player,
+                        square2[1]
+                    )
                     if position.empty(target):
                         move = position.make_move(origin, target)
                         move.en_passant = square2
@@ -252,16 +369,26 @@ class TripleStepPawn(DoubleStepPawn):
         return moves
 
 
+# Predefined pieces
+
+empty = Piece(NEUTRAL, ".")  # pseudo-piece for empty squares
+lava = Piece(NEUTRAL, " ")  # pseudo-piece for forbidden squares
+white_king = King(WHITE, "K")
+black_king = King(BLACK, "k")
+white_queen = Queen(WHITE, "Q")
+black_queen = Queen(BLACK, "q")
+white_bishop = Bishop(WHITE, "B")
+black_bishop = Bishop(BLACK, "b")
+white_knight = Knight(WHITE, "N")
+black_knight = Knight(BLACK, "n")
+white_rook = Rook(WHITE, "R")
+black_rook = Rook(BLACK, "r")
+
+
+# Positions
+
 class Position:
-    """The base class of all positions.
-
-    User-defined size. En passant is supported but not castling. Subclasses
-    that introduce additional state (e.g. castling rights) will typically
-    override __init__, generate_moves and make_move, see OrthodoxPosition for
-    an example.
-    """
-
-    penalty_cache = {}
+    """The base class of all positions."""
 
     def __init__(self, **kwargs):
         """Create a new empty position or copy an existing one."""
@@ -271,23 +398,20 @@ class Position:
             self.player = copy.player
             self.royal = dict(copy.royal)
             self.size = copy.size
-        elif "size" in kwargs:
+        else:
             size = kwargs["size"]
             self.board = [[empty for j in range(size[1])] for i in
                           range(size[0])]
             self.player = WHITE
             self.royal = {WHITE: None, BLACK: None}
             self.size = size
-        self.en_passant = None  # not copied!
-        self.en_passant2 = None  # not copied!
 
     def __getitem__(self, square):
-        """Get a piece."""
-        try:
-            if square[0] < 0 or square[1] < 0:
-                raise IndexError()
+        """Get a piece. Returns lava for coordinates out of bounds."""
+        if (square[0] >= 0 and square[0] < self.size[0] and square[1] >= 0
+                and square[1] < self.size[1]):
             return self.board[square[0]][square[1]]
-        except IndexError:
+        else:
             return lava
 
     def __setitem__(self, square, piece):
@@ -314,7 +438,7 @@ class Position:
             for j in range(self.size[1]):
                 origin = i, j
                 if (self[origin].player == attacker
-                        and self[origin].attacks(square, origin, self)):
+                        and self[origin].attacks(self, square, origin)):
                     return True
         return False
 
@@ -339,8 +463,7 @@ class Position:
         for i in range(self.size[0]):
             for j in range(self.size[1]):
                 square = i, j
-                value = self[square].value - self.penalty(square)
-                score += self[square].player * value
+                score += self[square].player * self[square].value
         return self.player * score
 
     def game_over(self):
@@ -353,8 +476,6 @@ class Position:
         for move in self.generate_moves():
             if move.legal():
                 legal_moves.append(move)
-        # MVV-LVA presorting
-        legal_moves.sort(key=lambda move: move.presort, reverse=True)
         return legal_moves
 
     def generate_moves(self):
@@ -364,7 +485,7 @@ class Position:
             for j in range(self.size[1]):
                 origin = i, j
                 if self.movable(origin):
-                    moves += self[origin].generate_moves(origin, self)
+                    moves += self[origin].generate_moves(self, origin)
         return moves
 
     def legal(self):
@@ -372,61 +493,50 @@ class Position:
         return (self.player == WHITE and not self.check(BLACK)
                 or self.player == BLACK and not self.check(WHITE))
 
-    def make_move(self, origin, target, promotion=None):
+    def make_move(self, origin, target):
         """Copy the position and move a piece on the copy.
 
         Parameters:
         origin -- The square of origin.
         target -- The target square.
-        promotion -- A piece to promote to (optional).
         """
         # copy position
         move = type(self)(copy=self)
-        # presort score (MVV-LVA)
-        move.presort = move[target].value - move[origin].value
-        # set notation
-        move.notation = "%s%d%s%d" % (chr(origin[1] + 97), move.size[0]
-                                      - origin[0], chr(target[1] + 97),
-                                      move.size[0] - target[0])
         # move piece
-        if promotion is not None:
-            move[target] = promotion
-            move.notation += promotion.symbol
-        else:
-            move[target] = move[origin]
+        move[target] = move[origin]
         move[origin] = empty
         # update royal positions
         if origin == move.royal[move.player]:
             move.royal[move.player] = target
         # switch player
         move.player *= -1
+        # set notation
+        move.notation = "%s%d%s%d" % (chr(origin[1] + 97), move.size[0]
+                                      - origin[0], chr(target[1] + 97),
+                                      move.size[0] - target[0])
         return move
 
     def movable(self, square):
         """Return True if a piece belongs to the moving player."""
         return self[square].player == self.player
 
-    def penalty(self, square):
-        """Return a penalty in centipawns proportional to center distance."""
-        if square in self.penalty_cache:
-            return self.penalty_cache[square]
-        a = square[0] - self.size[0] / 2 + 0.5
-        b = square[1] - self.size[1] / 2 + 0.5
-        penalty = round(10 * (a ** 2 + b ** 2) ** 0.5)
-        self.penalty_cache[square] = penalty
-        return penalty
+
+class EnPassantPosition(Position):
+    def __init__(self, **kwargs):
+        Position.__init__(self, **kwargs)
+        self.en_passant = None
 
 
-class CapablancaPosition(Position):
+class CapablancaPosition(EnPassantPosition):
     """An 8x10 position with support for Capablanca castling."""
 
     def __init__(self, **kwargs):
         if "copy" in kwargs:
             copy = kwargs["copy"]
-            Position.__init__(self, **kwargs)
+            EnPassantPosition.__init__(self, **kwargs)
             self.castling = list(copy.castling)  # copy castling rights
         else:
-            Position.__init__(self, size=(8, 10))
+            EnPassantPosition.__init__(self, size=(8, 10))
             self.castling = [False, False, False, False]
 
     def black_kingside_castling(self):
@@ -445,7 +555,7 @@ class CapablancaPosition(Position):
                 self.attacked((0, 3), WHITE))
 
     def generate_moves(self):
-        moves = Position.generate_moves(self)
+        moves = EnPassantPosition.generate_moves(self)
         # castling
         if self.player == WHITE:
             if self.white_kingside_castling():
@@ -471,8 +581,8 @@ class CapablancaPosition(Position):
                 moves.append(move)
         return moves
 
-    def make_move(self, origin, target, promotion=None):
-        move = Position.make_move(self, origin, target, promotion)
+    def make_move(self, origin, target):
+        move = EnPassantPosition.make_move(self, origin, target)
         # update castling rights
         if origin == (7, 5) or origin == (7, 9) or target == (7, 9):
             move.castling[0] = False
@@ -500,16 +610,16 @@ class CapablancaPosition(Position):
                 self.attacked((7, 3), BLACK))
 
 
-class OrthodoxPosition(Position):
+class OrthodoxPosition(EnPassantPosition):
     """An 8x8 position with support for castling."""
 
     def __init__(self, **kwargs):
         if "copy" in kwargs:
             copy = kwargs["copy"]
-            Position.__init__(self, **kwargs)
+            EnPassantPosition.__init__(self, **kwargs)
             self.castling = list(copy.castling)  # copy castling rights
         else:
-            Position.__init__(self, size=(8, 8))
+            EnPassantPosition.__init__(self, size=(8, 8))
             self.castling = [False, False, False, False]
 
     def black_kingside_castling(self):
@@ -525,7 +635,7 @@ class OrthodoxPosition(Position):
                 and not self.attacked((0, 3), WHITE))
 
     def generate_moves(self):
-        moves = Position.generate_moves(self)
+        moves = EnPassantPosition.generate_moves(self)
         # castling
         if self.player == WHITE:
             if self.white_kingside_castling():
@@ -551,8 +661,8 @@ class OrthodoxPosition(Position):
                 moves.append(move)
         return moves
 
-    def make_move(self, origin, target, promotion=None):
-        move = Position.make_move(self, origin, target, promotion)
+    def make_move(self, origin, target):
+        move = EnPassantPosition.make_move(self, origin, target)
         # update castling rights
         if origin == (7, 4) or origin == (7, 7) or target == (7, 7):
             move.castling[0] = False
@@ -576,6 +686,14 @@ class OrthodoxPosition(Position):
                 and self.empty((7, 1)) and not self.attacked((7, 4), BLACK)
                 and not self.attacked((7, 3), BLACK))
 
+
+class TripleStepEnPassantPosition(EnPassantPosition):
+    def __init__(self, **kwargs):
+        EnPassantPosition.__init__(self, **kwargs)
+        self.en_passant2 = None
+
+
+# AI
 
 best_move = None
 killer_moves = None
@@ -609,18 +727,19 @@ def alpha_beta(position, depth, alpha=-20000, beta=20000):
         else:
             return stalemate_rule * 20000, None
     score = -25000
-    best_move = None
     for move in moves:
         subscore = -alpha_beta(move, depth - 1, -beta, -alpha)[0]
         if subscore > score:
             score = subscore
-            best_move = move
+            best_moves = [move]
             if score > alpha:
                 alpha = score
                 if alpha >= beta:
                     killer_moves[depth - 1] = best_move.notation
                     break
-    return score, best_move
+        elif subscore == score:
+            best_moves.append(move)
+    return score, choice(best_moves)
 
 
 def iterative_deepening(position):
@@ -690,22 +809,15 @@ def play(position, time_limit, white=HUMAN, black=COMPUTER, stalemate=DRAW):
             else:
                 print("%d... %s" % (count, best_move.notation))
             position = best_move
+        # random move
+        elif players[position.player] == RANDOM:
+            move = choice(position.generate_legal_moves())
+            if position.player == WHITE:
+                print("%d. %s" % (count, move.notation))
+            else:
+                print("%d... %s" % (count, move.notation))
+            position = move
         print()
         print(position)
         if position.player == WHITE:
             count += 1
-
-
-# predefined pieces
-empty = Piece(NEUTRAL, ".")  # pseudo-piece for empty squares
-lava = Piece(NEUTRAL, "")  # pseudo-piece for forbidden squares
-white_king = King(WHITE, "K")
-black_king = King(BLACK, "k")
-white_queen = Queen(WHITE, "Q")
-black_queen = Queen(BLACK, "q")
-white_bishop = Bishop(WHITE, "B")
-black_bishop = Bishop(BLACK, "b")
-white_knight = Knight(WHITE, "N")
-black_knight = Knight(BLACK, "n")
-white_rook = Rook(WHITE, "R")
-black_rook = Rook(BLACK, "r")

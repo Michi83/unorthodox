@@ -1,14 +1,14 @@
-from unorthodox import (BLACK, Position, DoubleStepPawn, WHITE, black_bishop,
-                        black_king, black_knight, black_queen, black_rook,
-                        play, white_bishop, white_king, white_knight,
-                        white_queen, white_rook)
+from unorthodox import (BLACK, EnPassantPosition, DoubleStepPawn, WHITE,
+                        black_bishop, black_king, black_knight, black_queen,
+                        black_rook, play, white_bishop, white_king,
+                        white_knight, white_queen, white_rook)
 
 
 white_pawn = DoubleStepPawn(WHITE, "P", (white_queen, white_bishop,
                                          white_knight, white_rook), 6)
 black_pawn = DoubleStepPawn(BLACK, "p", (black_queen, black_bishop,
                                          black_knight, black_rook), 1)
-position = Position(size=(8, 8))
+position = EnPassantPosition(size=(8, 8))
 position[0, 1] = black_knight
 position[0, 2] = black_knight
 position[0, 4] = black_king

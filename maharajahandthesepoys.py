@@ -1,11 +1,21 @@
-from unorthodox import (BLACK, Compound, DoubleStepPawn, OrthodoxPosition,
+from unorthodox import (BLACK, DoubleStepPawn, LeaperRider, OrthodoxPosition,
                         WHITE, black_bishop, black_king, black_knight,
                         black_queen, black_rook, play, white_knight,
                         white_queen)
 
 
-class Maharajah(Compound):
+class Maharajah(LeaperRider):
     value = 1200
+
+    rider_offsets = (
+        (-1, -1), (-1, 0), (-1, 1), (0, -1),
+        (0, 1), (1, -1), (1, 0), (1, 1),
+    )
+
+    leaper_offsets = (
+        (-2, -1), (-2, 1), (-1, -2), (-1, 2),
+        (1, -2), (1, 2), (2, -1), (2, 1),
+    )
 
 
 class SepoyPawn(DoubleStepPawn):
@@ -15,11 +25,8 @@ class SepoyPawn(DoubleStepPawn):
     def can_promote(self, square, position):
         return False
 
-    def must_promote(self, square, position):
-        return False
 
-
-white_maharajah = Maharajah(WHITE, "M", (white_knight, white_queen))
+white_maharajah = Maharajah(WHITE, "M")
 black_pawn = SepoyPawn(BLACK, "p", 1)
 position = OrthodoxPosition()
 position[0, 0] = black_rook
@@ -43,4 +50,4 @@ position.royal[WHITE] = 7, 4
 position.royal[BLACK] = 0, 4
 position.castling = [False, False, True, True]
 if __name__ == "__main__":
-    play(position, 10)
+    play(position, 10, 3, 3)

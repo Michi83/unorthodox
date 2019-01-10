@@ -95,14 +95,15 @@ class GrandChessPosition(EnPassantPosition):
     """A position with support for the Grand Chess promotion rule."""
 
     def __init__(self, **kwargs):
-        EnPassantPosition.__init__(self, **kwargs)
         if "copy" in kwargs:
+            EnPassantPosition.__init__(self, **kwargs)
             copy = kwargs["copy"]
             self.promotions = {
                 WHITE: dict(copy.promotions[WHITE]),
                 BLACK: dict(copy.promotions[BLACK])
             }
         else:
+            EnPassantPosition.__init__(self, size=(10, 10))
             self.promotions = {
                 WHITE: {
                     white_queen: 0,
@@ -138,7 +139,7 @@ white_cardinal = Archbishop(WHITE, "C")
 black_cardinal = Archbishop(BLACK, "c")
 white_pawn = GrandChessPawn(WHITE, "P", 7)
 black_pawn = GrandChessPawn(BLACK, "p", 2)
-position = GrandChessPosition(size=(10, 10))
+position = GrandChessPosition()
 position[0, 0] = black_rook
 position[0, 9] = black_rook
 position[1, 1] = black_knight

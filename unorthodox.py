@@ -302,7 +302,6 @@ class SingleStepPawn(Piece):
 class King(Leaper):
     """The orthodox king."""
     value = 400
-
     offsets = (
         (-1, -1), (-1, 0), (-1, 1), (0, -1),
         (0, 1), (1, -1), (1, 0), (1, 1),
@@ -312,7 +311,6 @@ class King(Leaper):
 class Knight(Leaper):
     """The orthodox knight."""
     value = 300
-
     offsets = (
         (-2, -1), (-2, 1), (-1, -2), (-1, 2),
         (1, -2), (1, 2), (2, -1), (2, 1),
@@ -328,7 +326,6 @@ class Bishop(Rider):
 class Queen(Rider):
     """The orthodox queen."""
     value = 900
-
     offsets = (
         (-1, -1), (-1, 0), (-1, 1), (0, -1),
         (0, 1), (1, -1), (1, 0), (1, 1),
@@ -674,8 +671,8 @@ class OrthodoxPosition(EnPassantPosition):
 
     def __init__(self, **kwargs):
         if "copy" in kwargs:
-            copy = kwargs["copy"]
             EnPassantPosition.__init__(self, **kwargs)
+            copy = kwargs["copy"]
             self.castling = list(copy.castling)  # copy castling rights
         else:
             EnPassantPosition.__init__(self, size=(8, 8))

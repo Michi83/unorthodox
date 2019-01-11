@@ -47,4 +47,6 @@ position.royal[WHITE] = 7, 4
 position.royal[BLACK] = 0, 4
 position.castling = [True, True, True, True]
 if __name__ == "__main__":
+    print("Standard-rules chess, inventor unknown")
+    print("Rules: https://www.chessvariants.com/d.chess/chess.html")
     play(position, 10)

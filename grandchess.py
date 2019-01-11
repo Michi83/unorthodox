@@ -183,4 +183,6 @@ position[9, 9] = white_rook
 position.royal[WHITE] = 8, 4
 position.royal[BLACK] = 1, 4
 if __name__ == "__main__":
+    print("Grand Chess by Christian Freeling")
+    print("Rules: https://www.chessvariants.com/large.dir/freeling.html")
     play(position, 10)

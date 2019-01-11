@@ -79,4 +79,6 @@ position[7, 7] = white_rook
 position.royal[WHITE] = 7, 3
 position.royal[BLACK] = 0, 3
 if __name__ == "__main__":
+    print("Shatranj, inventor unknown")
+    print("Rules: https://www.chessvariants.com/historic.dir/shatranj.html")
     play(position, 10, stalemate=LOSS)

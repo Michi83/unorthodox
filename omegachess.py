@@ -169,4 +169,6 @@ position.royal[WHITE] = 10, 6
 position.royal[BLACK] = 1, 6
 position.castling = [True, True, True, True]
 if __name__ == "__main__":
+    print("Omega Chess by Daniel MacDonald")
+    print("Rules: https://www.chessvariants.com/large.dir/omega/rules.html")
     play(position, 10)

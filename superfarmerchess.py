@@ -4,10 +4,6 @@ from unorthodox import (BLACK, King, Leaper, OrthodoxPosition, Queen, WHITE,
                         white_rook)
 
 
-# variant by @krasmanalderey on Twitter
-# see https://pastebin.com/Ujg0XgPk
-
-
 class SuperFarmerPosition(OrthodoxPosition):
     def __init__(self, **kwargs):
         OrthodoxPosition.__init__(self, **kwargs)
@@ -92,4 +88,6 @@ position.royal[WHITE] = 7, 4
 position.royal[BLACK] = 0, 4
 position.castling = [True, True, True, True]
 if __name__ == "__main__":
+    print("Super Farmer Chess by @krasmanalderey on Twitter")
+    print("Rules: https://pastebin.com/Ujg0XgPk")
     play(position, 10)

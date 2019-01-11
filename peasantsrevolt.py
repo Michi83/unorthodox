@@ -26,4 +26,6 @@ position[7, 4] = white_king
 position.royal[WHITE] = 7, 4
 position.royal[BLACK] = 0, 4
 if __name__ == "__main__":
+    print("Peasants' Revolt, inventor unknown")
+    print("Rules: https://www.chessvariants.com/large.dir/peasantrevolt.html")
     play(position, 10)

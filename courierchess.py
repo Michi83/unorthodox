@@ -73,4 +73,6 @@ position[7, 11] = white_rook
 position.royal[WHITE] = 7, 5
 position.royal[BLACK] = 0, 5
 if __name__ == "__main__":
+    print("Courier Chess, inventor unknown")
+    print("Rules: https://www.chessvariants.com/historic.dir/courier.html")
     play(position, 10)

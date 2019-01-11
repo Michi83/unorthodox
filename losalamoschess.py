@@ -35,4 +35,6 @@ position[5, 5] = white_rook
 position.royal[WHITE] = 5, 3
 position.royal[BLACK] = 0, 3
 if __name__ == "__main__":
+    print("Los Alamos Chess by Paul Stein and Mark Wells")
+    print("Rules: https://www.chessvariants.com/small.dir/losalamos.html")
     play(position, 10)

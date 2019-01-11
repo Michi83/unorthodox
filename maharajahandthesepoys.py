@@ -49,4 +49,6 @@ position.royal[WHITE] = 7, 4
 position.royal[BLACK] = 0, 4
 position.castling = [False, False, True, True]
 if __name__ == "__main__":
+    print("The Maharajah and the Sepoys, inventor unknown")
+    print("Rules: https://www.chessvariants.com/unequal.dir/maharaja.html")
     play(position, 10, 3, 3)

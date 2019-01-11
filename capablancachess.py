@@ -77,4 +77,6 @@ position.royal[WHITE] = 7, 5
 position.royal[BLACK] = 0, 5
 position.castling = [True, True, True, True]
 if __name__ == "__main__":
+    print("Capablanca Chess by José Raúl Capablanca")
+    print("Rules: https://www.chessvariants.com/large.dir/capablanca.html")
     play(position, 10)

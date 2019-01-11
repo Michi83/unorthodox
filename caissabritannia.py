@@ -183,4 +183,6 @@ position[9, 9] = white_dragon
 position.royal[WHITE] = 9, 4
 position.royal[BLACK] = 0, 4
 if __name__ == "__main__":
+    print("Caïssa Britannia by Fergus Duniho")
+    print("Rules: https://www.chessvariants.com/large.dir/british.html")
     play(position, 10)

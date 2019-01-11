@@ -28,7 +28,7 @@ class CaissaBritanniaQueen(Queen):
 
 
 class CaissaBritanniaKing(King):
-    value = 675
+    value = 655
 
     def generate_moves(self, position, origin):
         moves = King.generate_moves(self, position, origin)
@@ -48,7 +48,7 @@ class CaissaBritanniaKing(King):
 
 
 class Lion(CannonRider):
-    value = 665
+    value = 645
     offsets = (
         (-1, -1), (-1, 0), (-1, 1), (0, -1),
         (0, 1), (1, -1), (1, 0), (1, 1),
@@ -56,7 +56,7 @@ class Lion(CannonRider):
 
 
 class Unicorn(Rider):
-    value = 795
+    value = 780
     offsets = (
         (-2, -1), (-2, 1), (-1, -2), (-1, -1), (-1, 1), (-1, 2),
         (1, -2), (1, -1), (1, 1), (1, 2), (2, -1), (2, 1)
@@ -64,7 +64,7 @@ class Unicorn(Rider):
 
 
 class Dragon(Rider):
-    value = 455
+    value = 450
     offsets = (
         (-2, -2), (-2, 0), (-2, 2), (0, -2),
         (0, 2), (2, -2), (2, 0), (2, 2)
@@ -72,7 +72,7 @@ class Dragon(Rider):
 
 
 class CaissaBritanniaBishop(Bishop):
-    value = 480
+    value = 470
     non_capture_offsets = (-1, 0), (0, -1), (0, 1), (1, 0)
 
     def generate_moves(self, position, origin):

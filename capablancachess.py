@@ -5,7 +5,7 @@ from unorthodox import (BLACK, DoubleStepPawn, EnPassantPosition, LeaperRider,
 
 
 class Chancellor(LeaperRider):
-    value = 765
+    value = 750
     rider_offsets = (-1, 0), (0, -1), (0, 1), (1, 0)
     leaper_offsets = (
         (-2, -1), (-2, 1), (-1, -2), (-1, 2),
@@ -14,7 +14,7 @@ class Chancellor(LeaperRider):
 
 
 class Archbishop(LeaperRider):
-    value = 640
+    value = 630
     rider_offsets = (-1, -1), (-1, 1), (1, -1), (1, 1)
     leaper_offsets = (
         (-2, -1), (-2, 1), (-1, -2), (-1, 2),

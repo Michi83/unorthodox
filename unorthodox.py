@@ -319,13 +319,13 @@ class Knight(Leaper):
 
 class Bishop(Rider):
     """The orthodox bishop."""
-    value = 340
+    value = 330
     offsets = (-1, -1), (-1, 1), (1, -1), (1, 1)
 
 
 class Queen(Rider):
     """The orthodox queen."""
-    value = 800
+    value = 780
     offsets = (
         (-1, -1), (-1, 0), (-1, 1), (0, -1),
         (0, 1), (1, -1), (1, 0), (1, 1),
@@ -334,7 +334,7 @@ class Queen(Rider):
 
 class Rook(Rider):
     """The orthodox rook."""
-    value = 465
+    value = 450
     offsets = (-1, 0), (0, -1), (0, 1), (1, 0)
 
 

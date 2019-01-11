@@ -4,7 +4,7 @@ from unorthodox import (BLACK, DoubleStepPawn, LeaperRider, OrthodoxPosition,
 
 
 class Maharajah(LeaperRider):
-    value = 1100
+    value = 1080
 
     rider_offsets = (
         (-1, -1), (-1, 0), (-1, 1), (0, -1),

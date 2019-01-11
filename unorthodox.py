@@ -445,6 +445,7 @@ black_rook = Rook(BLACK, "r")
 
 class Position:
     """The base class of all positions."""
+    scd_cache = {}
 
     def __init__(self, **kwargs):
         """Create a new empty position or copy an existing one."""
@@ -519,7 +520,8 @@ class Position:
         for i in range(self.size[0]):
             for j in range(self.size[1]):
                 square = i, j
-                score += self[square].player * self[square].value
+                score += (self[square].player * (self[square].value - 4
+                                                 * self.scd(square) + 50))
         return self.player * score
 
     def game_over(self):
@@ -575,6 +577,16 @@ class Position:
     def movable(self, square):
         """Return True if a piece belongs to the moving player."""
         return self[square].player == self.player
+
+    def scd(self, square):
+        """Calculate the square of center distance (SCD)."""
+        if (self.size, square) in self.scd_cache:
+            return self.scd_cache[self.size, square]
+        i = abs(self.size[0] / 2 - square[0] - 0.5)
+        j = abs(self.size[1] / 2 - square[1] - 0.5)
+        scd = i ** 2 + j ** 2
+        self.scd_cache[self.size, square] = scd
+        return scd
 
 
 class EnPassantPosition(Position):

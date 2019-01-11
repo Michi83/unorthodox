@@ -6,7 +6,7 @@ from unorthodox import (BLACK, Leaper, TripleStepEnPassantPosition,
 
 
 class Champion(Leaper):
-    value = 400
+    value = 500
     offsets = (
         (-1, 0), (0, -1), (0, 1), (1, 0),
         (-2, -2), (-2, 0), (-2, 2), (0, -2),
@@ -15,7 +15,7 @@ class Champion(Leaper):
 
 
 class Wizard(Leaper):
-    value = 400
+    value = 425
     offsets = (
         (-1, -1), (-1, 1), (1, -1), (1, 1),
         (-3, -1), (-3, 1), (-1, -3), (-1, 3),

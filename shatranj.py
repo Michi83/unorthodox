@@ -4,12 +4,12 @@ from unorthodox import (BLACK, LOSS, Leaper, NEUTRAL, Position, SingleStepPawn,
 
 
 class Ferz(Leaper):
-    value = 150
+    value = 175
     offsets = (-1, -1), (-1, 1), (1, -1), (1, 1)
 
 
 class Elephant(Leaper):
-    value = 100
+    value = 130
     offsets = (-2, -2), (-2, 2), (2, -2), (2, 2)
 
 

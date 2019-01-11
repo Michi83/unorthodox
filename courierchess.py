@@ -4,8 +4,8 @@ from unorthodox import (BLACK, Bishop, King, Leaper, Position, SingleStepPawn,
 from shatranj import Elephant, Ferz
 
 
-class Wazir(Leaper):
-    value = 100
+class Schleich(Leaper):
+    value = 200
     offsets = (-1, 0), (0, -1), (0, 1), (1, 0)
 
 
@@ -13,8 +13,8 @@ white_queen = Ferz(WHITE, "Q")
 black_queen = Ferz(BLACK, "q")
 white_man = King(WHITE, "M")
 black_man = King(BLACK, "m")
-white_schleich = Wazir(WHITE, "S")
-black_schleich = Wazir(BLACK, "s")
+white_schleich = Schleich(WHITE, "S")
+black_schleich = Schleich(BLACK, "s")
 white_courier = Bishop(WHITE, "C")
 black_courier = Bishop(BLACK, "c")
 white_bishop = Elephant(WHITE, "B")

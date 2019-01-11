@@ -31,7 +31,7 @@ class SuperFarmerJumpingQueen(Leaper):
 
 
 class SuperFarmerQueen(King):
-    value = 500
+    value = 375
 
     def attacks(self, position, square, origin):
         if King.attacks(self, position, square, origin):

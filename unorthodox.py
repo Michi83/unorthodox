@@ -301,7 +301,7 @@ class SingleStepPawn(Piece):
 
 class King(Leaper):
     """The orthodox king."""
-    value = 400
+    value = 375
     offsets = (
         (-1, -1), (-1, 0), (-1, 1), (0, -1),
         (0, 1), (1, -1), (1, 0), (1, 1),
@@ -319,13 +319,13 @@ class Knight(Leaper):
 
 class Bishop(Rider):
     """The orthodox bishop."""
-    value = 333
+    value = 340
     offsets = (-1, -1), (-1, 1), (1, -1), (1, 1)
 
 
 class Queen(Rider):
     """The orthodox queen."""
-    value = 900
+    value = 800
     offsets = (
         (-1, -1), (-1, 0), (-1, 1), (0, -1),
         (0, 1), (1, -1), (1, 0), (1, 1),
@@ -334,7 +334,7 @@ class Queen(Rider):
 
 class Rook(Rider):
     """The orthodox rook."""
-    value = 450
+    value = 465
     offsets = (-1, 0), (0, -1), (0, 1), (1, 0)
 
 

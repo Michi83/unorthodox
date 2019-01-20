@@ -357,6 +357,7 @@ class DoubleStepPawn(SingleStepPawn):
                     target[1]
                 )
                 move[square] = empty
+                moves.append(move)
         # double step
         if origin[0] == self.initial_rank:
             # the intermediate square
@@ -395,6 +396,7 @@ class TripleStepPawn(DoubleStepPawn):
                     target[1]
                 )
                 move[square] = empty
+                moves.append(move)
         # triple step
         if origin[0] == self.initial_rank:
             # first intermediate square
